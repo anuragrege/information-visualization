@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <div class="v1">
+    <script>
+      data = [11, 19, 12, 14, 13, 17, 18, 19, 9, 20, 15, 16, 22, 4, 9, 13];
+      var sorteddata = data.sort(d3.ascending);
+
+      var boxplot = d3.selectAll('div.v1')
+        .append("svg")
+        .attr('width', '600')
+        .attr('height', '230');
+
+      console.log(sorteddata);
+
+      var q1 = d3.quantile(sorteddata, 0.25);
+      var q3 = d3.quantile(sorteddata, 0.75);
+
+      var min = d3.min(data);
+      var max = d3.max(data);
+
+      var y = d3.scaleLinear().domain([min, max]).range([200, 0]);
+
+      // Y-axis (shifted up by 10)
+      boxplot.append('g')
+        .attr("transform", "translate(" + 20 + "," + 10 + ")")
+        .call(d3.axisLeft(y).tickFormat(d => d - 10)); // Adjust labels by -10
+
+      var x = d3.scalePoint().domain(["price"]).range([0, 200]);
+      boxplot.append('g')
+        .attr("transform", "translate(" + 20 + "," + 210 + ")")
+        .call(d3.axisBottom(x));
+
+      // Vertical line from min to max (shifted up by 10)
+      boxplot.append('line')
+        .attr("x1", x("price") + 20)
+        .attr("y1", y(min) - 10)
+        .attr("x2", x("price") + 20)
+        .attr("y2", y(max) - 10)
+        .attr("stroke", "black");
+
+      // Rectangle expanded from min to max (shifted up by 10)
+      boxplot.append('rect')
+        .attr("x", x("price") + 20 - 15)
+        .attr("y", y(max) - 10)
+        .attr("width", 15 * 2)
+        .attr("height", y(min) - y(max))
+        .attr("fill", "red")
+        .attr("stroke", "black");
+
+      // Line at first quartile (Q1) (shifted up by 10)
+      boxplot.append('line')
+        .attr("x1", x("price") + 20 - 15)
+        .attr("y1", y(q1) - 10)
+        .attr("x2", x("price") + 20 + 15)
+        .attr("y2", y(q1) - 10)
+        .attr("stroke", "black");
+
+      // Line at third quartile (Q3) (shifted up by 10)
+      boxplot.append('line')
+        .attr("x1", x("price") + 20 - 15)
+        .attr("y1", y(q3) - 10)
+        .attr("x2", x("price") + 20 + 15)
+        .attr("y2", y(q3) - 10)
+        .attr("stroke", "black");
+
+    </script>
+  </div>
+</body>
+
+</html>
